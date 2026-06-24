@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>تسجيل الدخول | السلام للأثاث</title>
+
+<style>
+    :root {
+        --clr-accent: #C8A97E;
+        --clr-bg: #0F0F0F;
+        --clr-text: #FFFFFF;
+        --clr-text-muted: #918A7E;
+        --border-luxury: rgba(200, 169, 126, 0.12);
+        --luxury-ease: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    * {
+        box-sizing: border-box;
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: #0F0F0F;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        color: var(--clr-text);
+        position: relative;
+        overflow: hidden;
+    }
+    .fixed-bg {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+        background: url("https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1920&auto=format&fit=crop") center/cover no-repeat;
+    }
+    .fixed-bg-overlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+        background: rgba(15, 15, 15, 0.82);
+    }
+
+    /* --- الحاوية الأساسية (Minimalist Luxury) --- */
+    .auth-box {
+        width: 100%;
+        max-width: 450px;
+        background: rgba(26, 24, 22, 0.88);
+        border: 1px solid var(--border-luxury);
+        position: relative;
+        padding: 60px 45px;
+        box-shadow: 0 40px 100px rgba(184, 134, 11, 0.05);
+    }
+
+    /* زخرفة علوية رفيعة */
+    .auth-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 2px;
+        background: var(--clr-accent);
+    }
+
+    .auth-content {
+        position: relative;
+        width: 100%;
+    }
+
+    .auth-content h1 {
+        font-family: 'Playfair Display', serif;
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: 2.5rem;
+        font-weight: 400;
+        letter-spacing: 1px;
+    }
+
+    .auth-content p {
+        text-align: center;
+        margin-bottom: 45px;
+        color: var(--clr-text-muted);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+    }
+
+    .input-group {
+        margin-bottom: 30px;
+    }
+
+    .input-group label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--clr-accent);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 15px 0;
+        border: none;
+        border-bottom: 1px solid var(--border-luxury);
+        outline: none;
+        font-size: 0.95rem;
+        background: transparent;
+        color: var(--clr-text);
+        transition: var(--luxury-ease);
+        border-radius: 0;
+    }
+
+    .input-group input:focus {
+        border-bottom-color: var(--clr-text);
+    }
+
+    .btn {
+        width: 100%;
+        padding: 20px;
+        border: 1px solid var(--clr-accent);
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        background: var(--clr-accent);
+        color: var(--clr-bg);
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        transition: var(--luxury-ease);
+        margin-top: 10px;
+    }
+
+    .btn:hover {
+        background: transparent;
+        color: var(--clr-text);
+        transform: translateY(-5px);
+    }
+
+    .auth-footer {
+        text-align: center;
+        margin-top: 40px;
+        font-size: 12px;
+        color: var(--clr-text-muted);
+    }
+
+    .auth-footer a {
+        color: var(--clr-text);
+        text-decoration: none;
+        font-weight: 700;
+        margin-left: 5px;
+        border-bottom: 1px solid var(--clr-accent);
+        transition: 0.3s;
+    }
+
+    .auth-footer a:hover {
+        color: var(--clr-accent);
+    }
+
+    .forgot-pass {
+        display: block;
+        text-align: right;
+        font-size: 11px;
+        color: var(--clr-text-muted);
+        text-decoration: none;
+        margin-top: -20px;
+        margin-bottom: 30px;
+        transition: 0.3s;
+    }
+
+    .forgot-pass:hover {
+        color: var(--clr-accent);
+    }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<div class="fixed-bg"></div>
+<div class="fixed-bg-overlay"></div>
+
+<div class="auth-box">
+    <div class="auth-content">
+        <h1>Welcome Back</h1>
+        <p>Sign in to your private account</p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="input-group">
+                <label>Username</label>
+                <input type="text" name="username" placeholder="Enter your username" required>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+
+            <a href="#" class="forgot-pass">Forgot password?</a>
+
+            <button class="btn">Login</button>
+        </form>
+
+        <div class="auth-footer">
+            New to the collection?
+            <a href="{% url 'signup' %}">Create Account</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

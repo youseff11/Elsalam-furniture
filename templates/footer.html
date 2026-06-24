@@ -1,0 +1,142 @@
+{% load static %}
+
+<style>
+    .footer {
+        background: var(--clr-surface, rgba(26, 24, 22, 0.85));
+        color: var(--clr-text, #F4EFE8);
+        padding: 100px 8% 40px;
+        position: relative;
+        font-family: var(--font-body, 'Tajawal', sans-serif);
+        border-top: 1px solid var(--clr-border, rgba(200, 169, 126, 0.12));
+    }
+
+    .footer-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 60px;
+        margin-bottom: 70px;
+    }
+
+    .footer h3 {
+        font-family: var(--font-body, 'Tajawal', sans-serif);
+        font-size: 18px;
+        margin-bottom: 28px;
+        color: var(--clr-accent, #C8A97E);
+        letter-spacing: 1px;
+        font-weight: 500;
+    }
+
+    .footer p {
+        font-size: 14px;
+        line-height: 2;
+        color: var(--clr-text-muted, #918A7E);
+        font-weight: 300;
+    }
+
+    .footer-links { list-style: none; padding: 0; margin: 0; }
+    .footer-links li { margin-bottom: 14px; }
+    .footer-links a {
+        color: var(--clr-text-muted, #918A7E);
+        text-decoration: none;
+        font-size: 14px;
+        transition: color 0.3s ease, transform 0.3s ease;
+        display: inline-block;
+        font-weight: 300;
+    }
+    .footer-links a:hover {
+        color: var(--clr-accent, #C8A97E);
+        transform: translateX(-5px);
+    }
+
+    .footer-social { display: flex; gap: 12px; margin-top: 28px; }
+    .footer-social a {
+        width: 38px; height: 38px;
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        display: flex; align-items: center; justify-content: center;
+        color: var(--clr-text-muted, #918A7E);
+        font-size: 16px;
+        text-decoration: none;
+        transition: all 0.4s ease;
+        border-radius: 4px;
+    }
+    .footer-social a:hover {
+        background: var(--clr-accent, #C8A97E);
+        border-color: var(--clr-accent, #C8A97E);
+        color: var(--clr-bg, #0F0F0F);
+        transform: translateY(-4px);
+    }
+
+    .footer-bottom {
+        border-top: 1px solid rgba(255,255,255,0.04);
+        padding-top: 35px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        font-size: 13px;
+        color: var(--clr-text-muted, #918A7E);
+        font-weight: 300;
+    }
+
+    .footer-brand {
+        font-family: var(--font-body, 'Tajawal', sans-serif);
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--clr-text, #F4EFE8);
+        margin-bottom: 12px;
+    }
+    .footer-brand span {
+        color: var(--clr-accent, #C8A97E);
+        display: block;
+        font-size: 13px;
+        font-weight: 300;
+        margin-top: 2px;
+        letter-spacing: 1px;
+    }
+
+    @media (max-width: 768px) {
+        .footer { padding: 60px 5% 30px; }
+        .footer-bottom { text-align: center; justify-content: center; flex-direction: column; }
+    }
+</style>
+
+<footer class="footer">
+    <div class="footer-grid">
+        <div>
+            <div class="footer-brand">
+                السلام للأثاث
+                <span>لتصنيع الأثاث الراقي</span>
+            </div>
+            <p>نصنع الفخامة من خشب الطبيعة. جودة التصنيع وإتقان التفاصيل هي ما يميز أعمالنا في صناعة الأثاث الراقي الذي يدوم لأجيال.</p>
+            <div class="footer-social">
+                <a href="https://www.facebook.com/mohammed.yahia332533" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/yhia9716/" target="_blank"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.tiktok.com/search?q=mohamedyhia846&t=1771957965481" target="_blank"><i class="fab fa-tiktok"></i></a>
+                <a href="https://wa.me/201020304907" target="_blank"><i class="fab fa-whatsapp"></i></a>
+            </div>
+        </div>
+        <div>
+            <h3>الأقسام</h3>
+            <ul class="footer-links">
+                <li><a href="{% url 'shop' %}?category=living">غرف المعيشة</a></li>
+                <li><a href="{% url 'shop' %}?category=bedroom">غرف النوم</a></li>
+                <li><a href="{% url 'shop' %}?category=kitchen">المطابخ</a></li>
+                <li><a href="{% url 'shop' %}">أحدث الموديلات</a></li>
+            </ul>
+        </div>
+        <div>
+            <h3>عن المصنع</h3>
+            <ul class="footer-links">
+                <li><a href="{% url 'about' %}">من نحن</a></li>
+                <li><a href="{% url 'contact' %}">تواصل معنا</a></li>
+                <li><a href="{% url 'policies' %}">سياسة الضمان</a></li>
+                <li><a href="{% url 'contact' %}">موقعنا</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div>© 2026 السلام للأثاث. جميع الحقوق محفوظة.</div>
+        <div style="letter-spacing: 2px;">صُنع بكل فخر في مصر</div>
+    </div>
+</footer>

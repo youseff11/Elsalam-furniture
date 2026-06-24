@@ -1,0 +1,440 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+<style>
+    :root { 
+        --clr-accent: #C8A97E;
+        --gold-gradient: linear-gradient(135deg, #C8A97E 0%, #E2CBA8 50%, #C8A97E 100%);
+        --clr-bg: #fdfaf3;
+        --clr-surface: rgba(26, 24, 22, 0.85);
+        --clr-text: #1a1a1a;
+        --clr-text-muted: #777;
+        --border-luxury: rgba(184, 134, 11, 0.15);
+        --danger: #a00000;
+        --success: #27ae60;
+        --luxury-ease: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+
+    body { 
+        background: transparent; 
+        color: var(--clr-text); 
+        font-family: 'Tajawal', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .dashboard-wrapper { 
+        padding: 140px 5% 80px; 
+        max-width: 1400px; 
+        margin: auto; 
+    }
+
+    /* --- ملخص الإحصائيات (Stats) --- */
+    .stats-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+        gap: 15px; 
+        margin-bottom: 50px; 
+    }
+    .stat-card { 
+        background: var(--clr-surface); 
+        border: 1px solid var(--border-luxury); 
+        padding: 25px; 
+        text-align: center; 
+        transition: var(--luxury-ease);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+    }
+    .stat-card:hover { transform: translateY(-5px); border-color: var(--clr-accent); }
+    .stat-card i { font-size: 1.5rem; color: var(--clr-accent); margin-bottom: 10px; display: block; }
+    .stat-card h3 { 
+        font-family: 'Playfair Display', serif; font-size: 2rem; 
+        margin: 0; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
+    }
+    .stat-card p { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: var(--clr-text-muted); margin-top: 5px; }
+
+    /* --- إدارة الأقسام --- */
+    .admin-section { 
+        background: var(--clr-surface); 
+        border: 1px solid var(--border-luxury); 
+        margin-bottom: 40px; 
+        overflow: hidden;
+    }
+    .section-header { 
+        background: var(--clr-surface); padding: 25px 30px; 
+        display: flex; justify-content: space-between; align-items: center; 
+        border-bottom: 1px solid var(--border-luxury);
+        flex-wrap: wrap; gap: 15px;
+    }
+    .section-header h3 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin: 0; }
+
+    /* --- الجداول وتنسيق السكرول بار --- */
+    .table-container { 
+        width: 100%; 
+        overflow-x: auto; 
+        max-height: 500px; 
+        overflow-y: auto; 
+    }
+
+    .table-container::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+    .table-container::-webkit-scrollbar-track {
+        background: rgba(255,255,255,0.1);
+    }
+    .table-container::-webkit-scrollbar-thumb {
+        background: var(--clr-accent);
+        border-radius: 10px;
+    }
+
+    table { width: 100%; border-collapse: collapse; min-width: 700px; }
+    
+    thead th { 
+        position: sticky; 
+        top: 0; 
+        z-index: 10;
+        text-align: right; padding: 15px 25px; background: rgba(252, 250, 245, 0.05); 
+        color: var(--clr-accent); font-size: 12px; text-transform: uppercase; 
+    }
+    
+    td { padding: 15px 25px; border-bottom: 1px solid #f9f9f9; font-size: 14px; }
+
+    .product-thumb { 
+        width: 50px; height: 60px; object-fit: cover; 
+        border: 1px solid #eee; border-radius: 4px;
+    }
+
+    /* --- الأزرار --- */
+    .btn-gold { 
+        background: transparent; color: var(--clr-accent); 
+        border: 1px solid var(--clr-accent); padding: 8px 20px; 
+        text-decoration: none; font-size: 11px; font-weight: 700; 
+        transition: 0.3s; cursor: pointer; display: inline-block;
+    }
+    .btn-gold:hover { background: var(--clr-accent); color: #fff; }
+    .btn-danger { color: var(--danger); border-color: var(--danger); }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+
+    /* --- تفاصيل الطلب والرسائل (Expandable) --- */
+    .details-expand-row { display: none; background: #fafafa; }
+    .details-box { padding: 30px; border-top: 2px solid var(--clr-accent); }
+
+    .order-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+        gap: 30px; 
+    }
+
+    .order-item-card { 
+        display: flex; align-items: center; gap: 20px; 
+        background: var(--clr-surface); padding: 15px; border: 1px solid #eee; margin-bottom: 10px;
+    }
+    .order-item-img { width: 60px; height: 75px; object-fit: cover; border-radius: 4px; }
+
+    /* --- قسم الفاتورة --- */
+    .discount-section {
+        background: var(--clr-surface); 
+        padding: 25px; 
+        border: 1px dashed var(--clr-accent); 
+        margin-top: 20px;
+        border-radius: 4px;
+    }
+    .billing-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+    }
+    .billing-label { color: var(--clr-text); font-weight: 600; }
+    .billing-value { font-weight: 700; }
+    .billing-divider { border-top: 1px solid #eee; margin: 15px 0; }
+    .total-row { font-size: 1.5rem; }
+
+    /* --- شارات الحالة --- */
+    .badge { padding: 5px 12px; font-size: 10px; font-weight: 700; border-radius: 20px; }
+    .status-pending { background: #fff8e1; color: #ffa000; }
+    .status-delivered { background: #e8f5e9; color: #27ae60; }
+    .status-shipped { background: #e0f2f1; color: #00796b; }
+    .status-canceled { background: #ffebee; color: #c62828; }
+
+    /* --- تحسينات الشاشة الصغيرة (التلفون) --- */
+    @media (max-width: 768px) {
+        .dashboard-wrapper { padding: 100px 10px 50px; }
+        
+        /* تقليل الـ padding العام للجداول لمنع التمدد الزائد */
+        table { min-width: 100%; }
+        thead th { padding: 10px 8px; font-size: 11px; }
+        td { padding: 10px 8px; font-size: 12px; }
+
+        .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .stat-card { padding: 15px 5px; }
+        .stat-card h3 { font-size: 1.3rem; }
+        
+        .section-header { padding: 15px 10px; text-align: center; flex-direction: column; }
+        .hide-mobile { display: none; }
+
+        /* تعديلات محددة لقائمة الطلبات في التلفون */
+        .badge { padding: 4px 8px; font-size: 9px; }
+        .details-box { padding: 15px 10px; }
+        
+        /* جعل الأزرار داخل التفاصيل أكثر تناسقاً */
+        .btn-gold { padding: 6px 12px; font-size: 10px; width: 100%; text-align: center; margin-top: 5px; }
+        form { flex-direction: column; gap: 5px; }
+        form input, form select { width: 100% !important; margin: 0 !important; }
+    }
+</style>
+
+<div class="dashboard-wrapper" dir="rtl">
+    
+    <div style="text-align: center; margin-bottom: 50px;" class="animate__animated animate__fadeInDown">
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 2.5rem; margin: 0;">مركز <span style="color: var(--clr-accent)">الإدارة</span></h2>
+        <p style="color: var(--clr-accent); letter-spacing: 4px; font-size: 12px; margin-top: 10px;">نظام مصنع السلام للأثاث - الإدارة الاحترافية</p>
+    </div>
+
+    <div class="stats-grid animate__animated animate__fadeInUp">
+        <div class="stat-card">
+            <i class="fas fa-shopping-cart"></i>
+            <h3>{{ orders_count }}</h3>
+            <p>إجمالي الطلبات</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-hourglass-half"></i>
+            <h3>{{ pending_orders }}</h3>
+            <p>طلبات معلقة</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-couch"></i>
+            <h3>{{ products_count }}</h3>
+            <p>قطعة في الكتالوج</p>
+        </div>
+        <div class="stat-card">
+            <i class="fas fa-coins"></i>
+            <h3>{{ total_revenue|floatformat:0 }}</h3>
+            <p>الأرباح (ج.م)</p>
+        </div>
+    </div>
+
+    <div class="admin-section animate__animated animate__fadeInUp">
+        <div class="section-header">
+            <h3><i class="fas fa-boxes" style="margin-left: 10px; color: var(--clr-accent);"></i> إدارة المخزون</h3>
+            <a href="{% url 'admin:store_product_add' %}" class="btn-gold" style="background: #000; border: none; color: #fff;">+ إضافة قطعة جديدة</a>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>المعينة</th>
+                        <th>اسم المنتج</th>
+                        <th>السعر الأساسي</th>
+                        <th class="hide-mobile">المخزون الكلي</th>
+                        <th>الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td>
+                            <img src="{% if product.main_image %}{{ product.main_image }}{% endif %}" class="product-thumb" onerror="this.src='https://via.placeholder.com/50x60'">
+                        </td>
+                        <td><strong>{{ product.name }}</strong><br><small style="color: #888;">{{ product.sku }}</small></td>
+                        <td style="font-weight: 700;">{{ product.price|floatformat:0 }} ج.م</td>
+                        <td class="hide-mobile">
+                            {% if product.stock <= 2 %}
+                                <span style="color: var(--danger); font-weight: bold;">⚠️ {{ product.stock }}</span>
+                            {% else %}
+                                <span style="color: var(--success);">{{ product.stock }} قطعة</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 8px;">
+                                <a href="{% url 'admin:store_product_change' product.pk %}" class="btn-gold" style="background: #1a1a1a; color: #fff; border: none; padding: 8px 15px;">
+                                    <i class="fas fa-edit"></i> تعديل
+                                </a>
+                                <a href="{% url 'delete_product' product.pk %}" class="btn-gold btn-danger" onclick="return confirm('هل أنت متأكد من حذف المنتج نهائياً؟')" style="padding: 8px 15px;">
+                                    <i class="fas fa-trash"></i> حذف
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="admin-section animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+        <div class="section-header">
+            <h3><i class="fas fa-truck-loading" style="margin-left: 10px; color: var(--clr-accent);"></i> طلبات العملاء</h3>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>رقم الطلب</th>
+                        <th>العميل</th>
+                        <th>الإجمالي</th>
+                        <th>الحالة</th>
+                        <th class="hide-mobile">التاريخ</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr style="cursor: pointer;" onclick="toggleExpand('order-{{ order.id }}')">
+                        <td style="font-weight: 700; color: var(--clr-accent);">#{{ order.id }}</td>
+                        <td><strong>{{ order.name }}</strong><br><small>{{ order.phone }}</small></td>
+                        <td style="font-weight: 700;">{{ order.total_price|floatformat:0 }} ج.م</td>
+                        <td><span class="badge status-{{ order.status|lower }}">{{ order.get_status_display }}</span></td>
+                        <td class="hide-mobile">{{ order.created_at|date:"d M, Y" }}</td>
+                        <td><i class="fas fa-chevron-down" style="opacity: 0.3;"></i></td>
+                    </tr>
+                    <tr id="order-{{ order.id }}" class="details-expand-row">
+                        <td colspan="6">
+                            <div class="details-box">
+                                <div class="order-grid">
+                                    <div>
+                                        <h4 style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">فاتورة القطع</h4>
+                                        {% for item in order.items.all %}
+                                        <div class="order-item-card">
+                                            <img src="{% if item.product.main_image %}{{ item.product.main_image }}{% endif %}" class="order-item-img" onerror="this.src='https://via.placeholder.com/60x75'">
+                                            <div style="flex: 1;">
+                                                <div style="font-weight: 700;">{{ item.product.name }}</div>
+                                                <small>{{ item.color }} | مقاس: {{ item.size }}</small>
+                                                <form method="POST" action="{% url 'update_item_quantity' item.id %}" style="display: flex; gap: 5px; margin-top: 10px;">
+                                                    {% csrf_token %}
+                                                    <input type="number" name="quantity" value="{{ item.quantity }}" style="width: 45px; border: 1px solid #ddd; text-align: center;">
+                                                    <button type="submit" class="btn-gold" style="padding: 2px 10px;"><i class="fas fa-sync"></i></button>
+                                                    <button type="submit" name="action" value="delete" class="btn-gold btn-danger" style="padding: 2px 10px;"><i class="fas fa-trash"></i></button>
+                                                </form>
+                                            </div>
+                                            <div style="font-weight: 700;">{{ item.subtotal|floatformat:0 }} ج.م</div>
+                                        </div>
+                                        {% endfor %}
+                                        
+                                        <div class="discount-section">
+                                            <div class="billing-row">
+                                                <span class="billing-label">إجمالي القطع:</span>
+                                                <span class="billing-value">{{ order.get_items_total|floatformat:0 }} ج.م</span>
+                                            </div>
+                                            <div class="billing-row" style="color: var(--danger);">
+                                                <span class="billing-label" style="color: var(--danger);">الخصومات المطبقة:</span>
+                                                <span class="billing-value">- {{ order.get_discount_amount|floatformat:0 }} ج.م</span>
+                                            </div>
+                                            <div class="billing-divider"></div>
+                                            <div class="billing-row total-row">
+                                                <span class="billing-label">الصافي:</span>
+                                                <span class="billing-value" style="color: var(--clr-accent);">{{ order.total_price|floatformat:0 }} ج.م</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">بيانات العميل</h4>
+                                        <div style="line-height: 2; font-size: 14px; margin-bottom: 25px;">
+                                            <div><i class="fas fa-user" style="width: 25px; color: var(--clr-accent);"></i> <strong>{{ order.name }}</strong></div>
+                                            <div><i class="fas fa-phone" style="width: 25px; color: var(--clr-accent);"></i> {{ order.phone }}</div>
+                                            <div><i class="fas fa-map-marker-alt" style="width: 25px; color: var(--clr-accent);"></i> {{ order.governorate }} - {{ order.address }}</div>
+                                            <div><i class="fas fa-envelope" style="width: 25px; color: var(--clr-accent);"></i> {{ order.email }}</div>
+                                        </div>
+
+                                        <h4 style="margin-bottom: 15px; font-size: 0.9rem;">تغيير الحالة</h4>
+                                        <form method="POST" action="{% url 'update_order_status' order.id %}">
+                                            {% csrf_token %}
+                                            <select name="status" style="padding: 10px; border: 1px solid #ddd; background: var(--clr-surface);">
+                                                {% for code, label in order.STATUS_CHOICES %}
+                                                <option value="{{ code }}" {% if order.status == code %}selected{% endif %}>{{ label }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button type="submit" class="btn-gold" style="background: #000; color: #fff; border: none;">تحديث</button>
+                                        </form>
+
+                                        <h4 style="margin-top: 20px; margin-bottom: 15px; font-size: 0.9rem;">تطبيق خصم</h4>
+                                        <form method="POST" action="{% url 'apply_order_discount' order.id %}">
+                                            {% csrf_token %}
+                                            <input type="number" name="discount_amount" placeholder="المبلغ (ج.م)" style="padding: 10px; border: 1px solid #ddd;">
+                                            <button type="submit" class="btn-gold">حفظ</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="admin-section animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+        <div class="section-header">
+            <h3><i class="fas fa-envelope-open-text" style="margin-left: 10px; color: var(--clr-accent);"></i> رسائل الاستفسارات</h3>
+        </div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 25%;">المرسل</th>
+                        <th>الموضوع</th>
+                        <th class="hide-mobile">التاريخ</th>
+                        <th style="width: 50px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for msg in messages %}
+                    <tr style="cursor: pointer;" onclick="toggleExpand('msg-{{ msg.id }}')">
+                        <td><strong>{{ msg.name }}</strong></td>
+                        <td style="color: var(--clr-accent); font-weight: 600;">{{ msg.subject }}</td>
+                        <td class="hide-mobile">{{ msg.created_at|date:"d M, Y" }}</td>
+                        <td><i class="fas fa-chevron-down" style="opacity: 0.3;"></i></td>
+                    </tr>
+                    <tr id="msg-{{ msg.id }}" class="details-expand-row">
+                        <td colspan="4">
+                            <div class="details-box">
+                                <div class="inquiry-content">
+                                    <p style="line-height: 1.8; font-size: 15px; margin-bottom: 25px;">{{ msg.message|linebreaks }}</p>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 20px; flex-wrap: wrap; gap: 15px;">
+                                        <div style="font-size: 13px; color: var(--clr-text-muted);">
+                                            <span style="margin-left: 15px;"><i class="fas fa-envelope"></i> {{ msg.email }}</span>
+                                            <span><i class="fas fa-phone"></i> {{ msg.phone }}</span>
+                                        </div>
+                                        <a href="mailto:{{ msg.email }}" class="btn-gold">الرد الرسمي</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="4" style="text-align: center; padding: 40px; color: #888;">لا توجد رسائل حالياً.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleExpand(id) {
+        const row = document.getElementById(id);
+        const isVisible = row.style.display === 'table-row';
+        if (!isVisible) {
+            row.style.display = 'table-row';
+            row.classList.add('animate__animated', 'animate__fadeIn');
+        } else {
+            row.style.display = 'none';
+        }
+    }
+
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.alert');
+        alerts.forEach(a => {
+            a.style.transition = "0.8s";
+            a.style.opacity = "0";
+            setTimeout(() => a.remove(), 800);
+        });
+    }, 4000);
+</script>
+{% endblock %}

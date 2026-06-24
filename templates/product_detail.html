@@ -1,0 +1,499 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block content %}
+
+
+<style>
+    :root {
+        --clr-accent: #C8A97E;
+        --clr-bg: #0F0F0F;
+        --clr-surface: rgba(26, 24, 22, 0.85);
+        --clr-text: #FFFFFF;
+        --clr-text-muted: #777;
+        --luxury-ease: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body { background: transparent; }
+
+    .detail-wrapper { padding: 40px 15px 40px; max-width: 1400px; margin: auto; }
+
+    /* Breadcrumbs */
+    .breadcrumb { font-size: 12px; margin-bottom: 20px; color: var(--clr-text-muted); letter-spacing: 1px; }
+    .breadcrumb a { color: var(--clr-text-muted); text-decoration: none; transition: 0.3s; }
+    .breadcrumb a:hover { color: var(--clr-accent); }
+
+    .detail-container-outer {
+        background: var(--clr-surface);
+        border: 1px solid rgba(184, 134, 11, 0.1);
+        box-shadow: 0 30px 60px rgba(0,0,0,0.03);
+    }
+
+    .detail-container { display: grid; grid-template-columns: 1.1fr 0.9fr; }
+
+    @media (max-width: 991px) {
+        .detail-container { grid-template-columns: 1fr; }
+        .info-section { position: static !important; padding: 25px 15px !important; }
+        .main-display { height: 350px !important; border-radius: 8px; }
+        .image-section { padding: 10px !important; border-right: none !important; }
+    }
+
+    /* Image Display Section */
+    .image-section { padding: 20px; border-right: 1px solid #f5f5f5; position: relative; }
+    
+    .main-display {
+        width: 100%; height: 550px; 
+        display: flex; align-items: center; justify-content: center;
+        background: var(--clr-surface); overflow: hidden; position: relative;
+    }
+
+    .product-main-img { 
+        width: 100%; height: 100%; 
+        object-fit: cover; transition: transform 0.6s var(--luxury-ease);
+    }
+
+    .main-display:hover .product-main-img { transform: scale(1.05); }
+
+    /* زرار العين */
+    .view-full-btn {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        background: var(--clr-surface);
+        border: none;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 20;
+        color: var(--clr-text);
+        font-size: 18px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        transition: var(--luxury-ease);
+    }
+    .view-full-btn:hover { background: var(--clr-accent); color: white; transform: scale(1.1); }
+
+    /* Modal */
+    .image-modal {
+        display: none;
+        position: fixed;
+        z-index: 100000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(5px);
+        opacity: 0;
+        transition: opacity 0.4s var(--luxury-ease);
+    }
+    .image-modal.show {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 1;
+    }
+    .image-modal-content {
+        max-width: 95%;
+        max-height: 90vh;
+        object-fit: contain; 
+        border-radius: 5px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        transform: scale(0.9);
+        transition: transform 0.4s var(--luxury-ease);
+    }
+    .image-modal.show .image-modal-content { transform: scale(1); }
+    .close-modal {
+        position: absolute;
+        top: 25px;
+        right: 40px;
+        color: #fff;
+        font-size: 45px;
+        font-weight: 300;
+        cursor: pointer;
+        z-index: 100001;
+    }
+
+    .thumbnail-gallery { display: flex; gap: 10px; margin-top: 15px; justify-content: center; }
+    .thumb { 
+        width: 70px; height: 80px; border: 1px solid rgba(200, 169, 126, 0.12); 
+        cursor: pointer; transition: 0.3s; padding: 3px; background: var(--clr-surface);
+    }
+    .thumb.active { border-color: var(--clr-accent); box-shadow: 0 5px 15px rgba(184,134,11,0.1); }
+    .thumb img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Info Section */
+    .info-section { padding: 40px; position: sticky; top: 80px; align-self: start; }
+    
+    .category-label { color: var(--clr-accent); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; display: block; }
+    .product-title { font-family: 'Tajawal', sans-serif; font-size: 2.2rem; margin-bottom: 12px; color: var(--clr-text); line-height: 1.2; }
+
+    .price-group { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+    .current-price { font-size: 1.8rem; color: #000; font-weight: 700; }
+    .old-price { font-size: 1.2rem; text-decoration: line-through; color: #aaa; }
+    
+    .stock-badge { font-size: 12px; color: #27ae60; background: #ebf9f1; padding: 4px 12px; border-radius: 20px; }
+    .stock-low { color: #e67e22; background: #fdf2e9; }
+    .stock-out { color: #e74c3c; background: #fceae9; }
+
+    .selection-label { font-size: 13px; font-weight: 700; margin-bottom: 12px; display: block; color: var(--clr-text); }
+    
+    .color-dots { display: flex; gap: 10px; margin-bottom: 25px; }
+    .color-dot { 
+        width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; 
+        box-shadow: 0 0 0 1px #ddd; cursor: pointer; transition: 0.2s;
+    }
+    .color-dot.active { box-shadow: 0 0 0 2px var(--clr-accent); transform: scale(1.1); }
+
+    .size-options { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+    .size-chip { 
+        padding: 10px 20px; border: 1px solid #ddd; font-size: 14px; 
+        cursor: pointer; transition: 0.3s; background: var(--clr-surface);
+    }
+    .size-chip:hover { border-color: #000; }
+    .size-chip.active { background: #000; color: #fff; border-color: #000; }
+    .size-chip.out-of-stock { opacity: 0.3; pointer-events: none; background: rgba(255,255,255,0.05); text-decoration: line-through; }
+
+    .btn-primary { 
+        width: 100%; background: #000; color: #fff; padding: 18px; 
+        border: none; font-weight: 700; letter-spacing: 1px; cursor: pointer;
+        transition: 0.4s; text-transform: uppercase;
+    }
+    .btn-primary:hover { background: var(--clr-accent); transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    .btn-disabled { background: #eee !important; color: #999 !important; cursor: not-allowed !important; transform: none !important; }
+
+    .description { border-top: 1px solid #eee; margin-top: 30px; padding-top: 25px; color: var(--clr-text-muted); font-size: 0.95rem; line-height: 1.7; }
+    
+    .specs-table td { vertical-align: top; line-height: 1.5; }
+
+    .lusso-toast {
+        position: fixed; top: 40px; right: -400px; 
+        background: var(--clr-surface); border-right: 5px solid var(--clr-accent);
+        padding: 20px 40px; box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        transition: 0.5s var(--luxury-ease); z-index: 9999;
+    }
+    .lusso-toast.active { right: 20px; }
+</style>
+
+<div class="detail-wrapper" dir="rtl">
+    <nav class="breadcrumb">
+        <a href="{% url 'home' %}">الرئيسية</a> / 
+        <a href="{% url 'shop' %}">المتجر</a> / 
+        <span>{{ product.name }}</span>
+    </nav>
+
+    <div class="detail-container-outer">
+        <div class="detail-container">
+            <div class="image-section">
+                {% if product.discount_price %}
+                    <div id="badge-discount" style="position: absolute; top: 20px; right: 20px; z-index: 5; background: #e74c3c; color: #fff; padding: 5px 12px; font-weight: 700; font-size: 11px;">
+                        خصم {{ product.discount_percentage }}%
+                    </div>
+                {% endif %}
+                
+                <div class="main-display" id="zoomContainer">
+                    <img src="" alt="{{ product.name }}" id="mainDetailImg" class="product-main-img">
+                    <button class="view-full-btn" onclick="openFullImage(event)" title="عرض الصورة كاملة">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+
+                <div class="thumbnail-gallery" id="thumbGallery"></div>
+            </div>
+
+            <div class="info-section">
+                <span class="category-label">{{ product.category.name|default:"السلام للأثاث" }}</span>
+                <h1 class="product-title">{{ product.name }}</h1>
+
+                <div class="price-group">
+                    <span class="current-price" id="displayCurrentPrice">{{ product.get_effective_price|floatformat:0 }} ج.م</span>
+                    <span class="old-price" id="displayOldPrice" style="{% if not product.discount_price %}display:none;{% endif %}">{{ product.price|floatformat:0 }} ج.م</span>
+                    
+                    <span id="stockStatus" class="stock-badge">متوفر في المخزن</span>
+                </div>
+
+                <div class="selection-group">
+                    <label class="selection-label">اختر اللون: <span id="colorNameDisplay" style="color: var(--clr-accent); margin-right: 10px;"></span></label>
+                    <div class="color-dots">
+                        {% for variant in product.variants.all %}
+                        <div class="color-dot" 
+                             style="background-color: {{ variant.color_code }};" 
+                             data-color="{{ variant.color_name }}"
+                             data-total-stock="{{ variant.total_stock }}"
+                             onclick="selectVariant(this)">
+                             
+                             <script type="application/json" class="v-images">
+                                ["{{ variant.variant_image.url }}"{% for extra in variant.additional_images.all %},"{{ extra.image.url }}"{% endfor %}]
+                             </script>
+                             <script type="application/json" class="v-sizes">
+                                [{% for s in variant.sizes.all %}{"n":"{{s.size_name}}","s":{{s.stock}},"p":"{{s.price|default:''}}","dp":"{{s.discount_price|default:''}}"} {% if not forloop.last %},{% endif %}{% endfor %}]
+                             </script>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <label class="selection-label">اختر المقاس:</label>
+                    <div class="size-options" id="sizeOptionsContainer"></div>
+                </div>
+
+                <div class="description">
+                    <h4 style="color:#000; margin-bottom: 8px; font-size: 1.1rem;">تفاصيل المنتج:</h4>
+                    
+                    {% if product.description %}
+                        {{ product.description|linebreaks }}
+                    {% endif %}
+
+                    {% if product.specifications.all %}
+                        <table class="specs-table" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                            <tbody>
+                                {% for spec in product.specifications.all %}
+                                <tr style="border-bottom: 1px solid rgba(200, 169, 126, 0.12);">
+                                    <td style="padding: 10px 5px; font-weight: bold; color: var(--clr-text); width: 35%; font-size: 0.9rem;">{{ spec.spec_name }}</td>
+                                    <td style="padding: 10px 5px; color: var(--clr-text-muted); font-size: 0.9rem;">{{ spec.spec_value|linebreaksbr }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    {% endif %}
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button id="add-to-cart-btn" class="btn-primary btn-disabled">اختر اللون والمقاس</button>
+                    <p style="text-align: center; margin-top: 12px; font-size: 12px; color: #888;">
+                        <i class="fas fa-truck" style="margin-left: 5px;"></i> شحن سريع لكافة محافظات مصر
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="lussoToast" class="lusso-toast">
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <div style="background: #27ae60; color: #fff; width: 25px; height: 25px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px;">✓</div>
+        <div>
+            <strong style="display: block; font-size: 14px;">تمت الإضافة!</strong>
+            <small style="color: #666;">المنتج بانتظارك في حقيبة التسوق</small>
+        </div>
+    </div>
+</div>
+
+<div id="fullImageModal" class="image-modal">
+    <span class="close-modal" onclick="closeModal()">&times;</span>
+    <img class="image-modal-content" id="modalImage">
+</div>
+
+<script>
+    let currentSelColor = "", currentSelSize = "";
+    const pId = "{{ product.id }}";
+    
+    // الأسعار الافتراضية للمنتج (في حال عدم وجود سعر للمقاس)
+    const basePrice = parseFloat("{{ product.price|default:0 }}");
+    const baseEffectivePrice = parseFloat("{{ product.get_effective_price|default:0 }}");
+
+    function selectVariant(el) {
+        document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+        el.classList.add('active');
+        currentSelColor = el.dataset.color;
+        const variantTotalStock = parseInt(el.dataset.totalStock);
+        document.getElementById('colorNameDisplay').innerText = currentSelColor;
+
+        const images = JSON.parse(el.querySelector('.v-images').textContent);
+        const mainImg = document.getElementById('mainDetailImg');
+        const thumbGallery = document.getElementById('thumbGallery');
+        
+        mainImg.style.opacity = '0';
+        setTimeout(() => {
+            mainImg.src = images[0];
+            mainImg.style.opacity = '1';
+        }, 200);
+
+        thumbGallery.innerHTML = "";
+        images.forEach((url, i) => {
+            const t = document.createElement('div');
+            t.className = `thumb ${i === 0 ? 'active' : ''}`;
+            t.innerHTML = `<img src="${url}">`;
+            t.onclick = () => {
+                mainImg.src = url;
+                document.querySelectorAll('.thumb').forEach(th => th.classList.remove('active'));
+                t.classList.add('active');
+            };
+            thumbGallery.appendChild(t);
+        });
+
+        const sizes = JSON.parse(el.querySelector('.v-sizes').textContent);
+        const sizeContainer = document.getElementById('sizeOptionsContainer');
+        const stockStatus = document.getElementById('stockStatus');
+        
+        sizeContainer.innerHTML = "";
+        currentSelSize = "";
+
+        if (variantTotalStock <= 0) {
+            stockStatus.innerText = "هذا اللون غير متوفر حالياً";
+            stockStatus.className = "stock-badge stock-out";
+        } else {
+            stockStatus.innerText = "متوفر في المخزن";
+            stockStatus.className = "stock-badge";
+        }
+
+        let availableChips = [];
+
+        sizes.forEach(sz => {
+            const chip = document.createElement('div');
+            chip.className = `size-chip ${sz.s <= 0 ? 'out-of-stock' : ''}`;
+            chip.innerText = sz.n;
+            
+            if(sz.s > 0) {
+                chip.onclick = () => {
+                    document.querySelectorAll('.size-chip').forEach(c => c.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentSelSize = sz.n;
+                    
+                    // تحديث السعر بناءً على المقاس
+                    updatePriceDisplay(sz);
+                    updateMainButton();
+                    
+                    if(sz.s < 5) {
+                        stockStatus.innerText = `بقي ${sz.s} قطع فقط من هذا المقاس!`;
+                        stockStatus.className = "stock-badge stock-low";
+                    } else {
+                        stockStatus.innerText = "هذا المقاس متوفر";
+                        stockStatus.className = "stock-badge";
+                    }
+                };
+                availableChips.push(chip);
+            }
+            sizeContainer.appendChild(chip);
+        });
+
+        if (availableChips.length === 1) {
+            availableChips[0].click();
+        } else {
+            // إعادة السعر للوضع الافتراضي عند تغيير اللون وقبل اختيار مقاس
+            resetPriceToDefault();
+        }
+
+        updateMainButton();
+    }
+
+    function updatePriceDisplay(sizeData) {
+        const currentPriceEl = document.getElementById('displayCurrentPrice');
+        const oldPriceEl = document.getElementById('displayOldPrice');
+        const badgeEl = document.getElementById('badge-discount');
+
+        let priceToDisplay, oldPriceToDisplay;
+
+        // التحقق من وجود سعر خاص للمقاس
+        if (sizeData.dp && sizeData.dp !== "") {
+            // يوجد سعر خصم للمقاس
+            priceToDisplay = parseFloat(sizeData.dp);
+            oldPriceToDisplay = sizeData.p ? parseFloat(sizeData.p) : basePrice;
+        } else if (sizeData.p && sizeData.p !== "") {
+            // يوجد سعر أساسي للمقاس بدون خصم
+            priceToDisplay = parseFloat(sizeData.p);
+            oldPriceToDisplay = null;
+        } else {
+            // لا يوجد سعر للمقاس، نستخدم أسعار المنتج الأساسية
+            priceToDisplay = baseEffectivePrice;
+            oldPriceToDisplay = (baseEffectivePrice < basePrice) ? basePrice : null;
+        }
+
+        // تنفيذ التحديث في الـ HTML
+        currentPriceEl.innerText = priceToDisplay.toLocaleString() + " ج.م";
+        
+        if (oldPriceToDisplay) {
+            oldPriceEl.innerText = oldPriceToDisplay.toLocaleString() + " ج.م";
+            oldPriceEl.style.display = 'inline';
+            if(badgeEl) {
+                let disc = Math.round(((oldPriceToDisplay - priceToDisplay) / oldPriceToDisplay) * 100);
+                badgeEl.innerText = `خصم ${disc}%`;
+                badgeEl.style.display = 'block';
+            }
+        } else {
+            oldPriceEl.style.display = 'none';
+            if(badgeEl) badgeEl.style.display = 'none';
+        }
+    }
+
+    function resetPriceToDefault() {
+        document.getElementById('displayCurrentPrice').innerText = baseEffectivePrice.toLocaleString() + " ج.م";
+        const oldPriceEl = document.getElementById('displayOldPrice');
+        if (baseEffectivePrice < basePrice) {
+            oldPriceEl.innerText = basePrice.toLocaleString() + " ج.م";
+            oldPriceEl.style.display = 'inline';
+        } else {
+            oldPriceEl.style.display = 'none';
+        }
+    }
+
+    function updateMainButton() {
+        const btn = document.getElementById('add-to-cart-btn');
+        const activeColorDot = document.querySelector('.color-dot.active');
+        const variantTotalStock = activeColorDot ? parseInt(activeColorDot.dataset.totalStock) : 0;
+
+        if (variantTotalStock <= 0) {
+            btn.classList.add('btn-disabled');
+            btn.innerText = "هذا اللون نفذ من المخزن";
+        } else if(currentSelColor && currentSelSize) {
+            btn.classList.remove('btn-disabled');
+            btn.innerText = "إضافة إلى حقيبة التسوق";
+        } else {
+            btn.classList.add('btn-disabled');
+            btn.innerText = !currentSelColor ? "اختر اللون أولاً" : "اختر المقاس";
+        }
+    }
+
+    function openFullImage(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const imgElement = document.getElementById('mainDetailImg');
+        const modal = document.getElementById('fullImageModal');
+        const modalImg = document.getElementById('modalImage');
+        
+        modalImg.src = imgElement.src;
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        setTimeout(() => {
+            modal.classList.add('show');
+        }, 10);
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('fullImageModal');
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+        
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 400); 
+    }
+
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('fullImageModal');
+        if (event.target === modal) {
+            closeModal();
+        }
+    });
+
+    document.getElementById('add-to-cart-btn').addEventListener('click', function() {
+        if(!this.classList.contains('btn-disabled')) {
+            const toast = document.getElementById('lussoToast');
+            toast.classList.add('active');
+            
+            setTimeout(() => {
+                window.location.href = `/add-to-cart/${pId}/?color=${encodeURIComponent(currentSelColor)}&size=${encodeURIComponent(currentSelSize)}`;
+            }, 1000);
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const first = document.querySelector('.color-dot');
+        if(first) first.click();
+    });
+</script>
+
+{% endblock %}

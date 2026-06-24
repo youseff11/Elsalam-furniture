@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>السلام للأثاث</title>
+    <link rel="icon" type="image/jpeg" href="{% static 'images/1.png' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="description" content="السلام للأثاث - نجمع بين عراقة التصميم، دقة التنفيذ، وفخامة الأثاث العصري والكلاسيكي">
+</head>
+<body>
+    {% block fixed_bg %}
+    <div class="fixed-bg"></div>
+    <div class="fixed-bg-overlay"></div>
+    {% endblock %}
+
+    {% include 'navbar.html' %}
+    {% block content %}
+    {% endblock %}
+    {% include 'footer.html' %}
+</body>
+</html>
