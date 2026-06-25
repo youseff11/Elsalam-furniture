@@ -16,10 +16,50 @@ from django_resized import ResizedImageField
 # --- Categories ---
 
 class Category(models.Model):
+    LAYOUT_CHOICES = [
+        ('large', 'كبير (يشغل عمودين وصفين)'),
+        ('tall', 'طويل (يشغل عمود وصفين)'),
+        ('wide', 'عادي (يشغل عمود وصف)'),
+    ]
+
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=100, unique=True, blank=True, null=True)
 
+    # --- إعدادات العرض في الصفحة الرئيسية ---
+    show_on_home = models.BooleanField(
+        default=False,
+        verbose_name="عرض في الصفحة الرئيسية",
+        help_text="فعّل لعرض هذا القسم في الصفحة الرئيسية (حد أقصى 4)"
+    )
+    home_display_order = models.PositiveIntegerField(
+        default=0,
+        verbose_name="ترتيب العرض",
+        help_text="رقم أصغر = يظهر أولاً"
+    )
+    home_layout = models.CharField(
+        max_length=10, choices=LAYOUT_CHOICES, default='wide',
+        verbose_name="حجم البطاقة",
+        help_text="كبير: يشغل مساحة كبيرة | طويل: عمود كامل | عادي: حجم صغير"
+    )
+    showcase_image = ResizedImageField(
+        size=[1200, 800], quality=80, upload_to='categories/',
+        force_format='WEBP', blank=True, null=True,
+        verbose_name="صورة العرض",
+        help_text="الصورة التي تظهر في الصفحة الرئيسية"
+    )
+    showcase_subtitle = models.CharField(
+        max_length=100, blank=True, null=True,
+        verbose_name="العنوان الفرعي",
+        help_text="مثال: المعيشة الفاخرة"
+    )
+    showcase_badge = models.CharField(
+        max_length=50, blank=True, null=True,
+        verbose_name="شارة مميزة",
+        help_text="مثال: الإصدار المحدود (اتركها فارغة لإخفائها)"
+    )
+
     class Meta:
+        verbose_name = "Category"
         verbose_name_plural = "Categories"
         ordering = ['name']
 

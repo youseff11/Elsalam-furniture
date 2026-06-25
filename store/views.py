@@ -38,7 +38,14 @@ def is_admin(user):
 # --- طرق العرض العامة (Public Views) ---
 
 def home(request):
-    return render(request, 'home.html')
+    # جلب الكاتيجوريز اللي الأدمن فعّل عرضها في الهوم (حد أقصى 4)
+    home_categories = Category.objects.filter(
+        show_on_home=True
+    ).order_by('home_display_order')[:4]
+    context = {
+        'home_categories': home_categories,
+    }
+    return render(request, 'home.html', context)
 
 from django.core.paginator import Paginator # تأكد من استيراد الموزع
 

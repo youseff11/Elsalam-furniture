@@ -117,9 +117,27 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
 # --- 6. CategoryAdmin ---
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['name', 'slug']
+    list_display = ['name', 'slug', 'show_on_home', 'home_display_order', 'home_layout', 'display_showcase_image']
+    list_editable = ['show_on_home', 'home_display_order', 'home_layout']
+    list_filter = ['show_on_home']
     prepopulated_fields = {'slug': ('name',)}
-    
+
+    fieldsets = (
+        ('معلومات أساسية', {
+            'fields': ('name', 'slug'),
+        }),
+        ('إعدادات الصفحة الرئيسية', {
+            'fields': ('show_on_home', 'home_display_order', 'home_layout', 'showcase_image', 'showcase_subtitle', 'showcase_badge'),
+            'description': 'فعّل "عرض في الصفحة الرئيسية" واختر الصورة والحجم. يظهر حد أقصى 4 أقسام.',
+        }),
+    )
+
+    def display_showcase_image(self, obj):
+        if obj.showcase_image:
+            return format_html('<img src="{}" style="width: 80px; height: 50px; border-radius: 5px; object-fit: cover; border: 1px solid #ddd;" />', obj.showcase_image.url)
+        return format_html('<span style="color: #e74c3c; font-size: 11px;">⚠ لا توجد صورة</span>')
+    display_showcase_image.short_description = 'صورة العرض'
+
     class Media:
         css = {
             'all': ('css/admin_custom.css',)

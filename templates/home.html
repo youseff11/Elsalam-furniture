@@ -359,42 +359,27 @@
     </div>
 
     <div class="bento-grid">
-        <div class="bento-item item-large" onclick="location.href='/shop/rokn/';">
-            <div class="luxury-badge">الإصدار المحدود</div>
-            <img src="{% static 'images/10.png' %}" alt="Living">
+        {% for cat in home_categories %}
+        <div class="bento-item {% if cat.home_layout == 'large' %}item-large{% elif cat.home_layout == 'tall' %}item-tall{% else %}item-wide{% endif %}" onclick="location.href='/shop/{{ cat.slug }}/';">
+            {% if cat.showcase_badge %}
+                <div class="luxury-badge">{{ cat.showcase_badge }}</div>
+            {% endif %}
+            {% if cat.showcase_image %}
+                <img src="{{ cat.showcase_image.url }}" alt="{{ cat.name }}">
+            {% else %}
+                <img src="{% static 'images/10.png' %}" alt="{{ cat.name }}">
+            {% endif %}
             <div class="item-explore"><i class="fas fa-arrow-left"></i></div>
             <div class="item-overlay" dir="rtl">
-                <span class="item-category">المعيشة الفاخرة</span>
-                <h3 class="item-title">انتريهات وركنات</h3>
+                {% if cat.showcase_subtitle %}
+                    <span class="item-category">{{ cat.showcase_subtitle }}</span>
+                {% endif %}
+                <h3 class="item-title">{{ cat.name }}</h3>
             </div>
         </div>
-
-        <div class="bento-item item-tall" onclick="location.href='/shop/ghrf-nom/';">
-            <img src="{% static 'images/14.png' %}" alt="Bedroom">
-            <div class="item-explore"><i class="fas fa-arrow-left"></i></div>
-            <div class="item-overlay" dir="rtl">
-                <span class="item-category">الملاذ الآمن</span>
-                <h3 class="item-title">غرف نوم</h3>
-            </div>
-        </div>
-
-        <div class="bento-item item-wide" onclick="location.href='/shop/mtbkh/';">
-            <img src="{% static 'images/11.jpg' %}" alt="Kitchen">
-            <div class="item-explore"><i class="fas fa-arrow-left"></i></div>
-            <div class="item-overlay" dir="rtl">
-                <span class="item-category">روح المنزل</span>
-                <h3 class="item-title">مطابخ حديثة</h3>
-            </div>
-        </div>
-
-        <div class="bento-item item-wide" onclick="location.href='/shop/ghrf-sfrh/';">
-            <img src="{% static 'images/12.webp' %}" alt="Dining">
-            <div class="item-explore"><i class="fas fa-arrow-left"></i></div>
-            <div class="item-overlay" dir="rtl">
-                <span class="item-category">ليالي دافئة</span>
-                <h3 class="item-title">غرف سفرة</h3>
-            </div>
-        </div>
+        {% empty %}
+        <!-- لا توجد أقسام مفعّلة للعرض -->
+        {% endfor %}
     </div>
 </section>
 
