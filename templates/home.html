@@ -295,11 +295,11 @@
     }
 
     /* --- WhatsApp --- */
-    .wa-float-container { position: fixed; bottom: 30px; left: 30px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-start; gap: 15px; }
-    .wa-contact-list { display: none; flex-direction: column; gap: 10px; margin-bottom: 5px; }
-    .wa-contact-item { background: var(--clr-surface); color: var(--clr-text); padding: 12px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); text-decoration: none; display: flex; align-items: center; gap: 12px; font-family: var(--font-body); font-size: 14px; font-weight: 500; white-space: nowrap; border: 1px solid var(--clr-border); transition: border-color 0.3s; }
+    .wa-float-container { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; gap: 15px; }
+    .wa-contact-list { display: none; flex-direction: column; gap: 10px; }
+    .wa-contact-item { background: var(--clr-surface); color: var(--clr-text); padding: 12px 20px; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); text-decoration: none; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 500; white-space: nowrap; border: 1px solid var(--clr-border); transition: border-color 0.3s; }
     .wa-contact-item:hover { border-color: #25D366; }
-    .wa-contact-item i { color: #25D366; font-size: 20px; }
+    .wa-contact-item i { color: #25D366; font-size: 18px; }
     .wa-main-btn { width: 58px; height: 58px; background: #25D366; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 28px; cursor: pointer; box-shadow: 0 8px 25px rgba(37, 211, 102, 0.25); transition: transform 0.3s; }
     .wa-main-btn:hover { transform: scale(1.08); }
     .wa-float-container.active .wa-contact-list { display: flex; }
@@ -311,15 +311,15 @@
     }
 </style>
 
-<div class="wa-float-container" id="waContainer" dir="rtl">
+<div class="wa-float-container" id="waContainer">
     <div class="wa-contact-list">
         <a href="https://wa.me/201020304907?text=مرحباً، أرغب في الاستفسار عن مبيعات السلام للأثاث" target="_blank" class="wa-contact-item">
-            <i class="fa-brands fa-whatsapp"></i>
             <span>مبيعات / استفسارات: 01020304907</span>
+            <i class="fa-brands fa-whatsapp"></i>
         </a>
         <a href="https://wa.me/201080504973?text=مرحباً، أرغب في الاستفسار عن مبيعات السلام للأثاث" target="_blank" class="wa-contact-item">
-            <i class="fa-brands fa-whatsapp"></i>
             <span>مبيعات / استفسارات: 01080504973</span>
+            <i class="fa-brands fa-whatsapp"></i>
         </a>
     </div>
     <div class="wa-main-btn" onclick="document.getElementById('waContainer').classList.toggle('active')">
