@@ -1,5 +1,3 @@
-
-
 {% extends 'base.html' %}
 {% block content %}
 <style>
@@ -8,8 +6,8 @@
         --clr-bg: #0F0F0F;
         --clr-surface: rgba(26, 24, 22, 0.85);
         --clr-text: #FFFFFF;
-        --clr-text-muted: #666666;
-        --border-luxury: rgba(200, 169, 126, 0.12);
+        --clr-text-muted: #A5A5A5; /* تم تفتيحه لزيادة المقروئية على الخلفية الداكنة */
+        --border-luxury: rgba(200, 169, 126, 0.18); /* حدود فاخرة ومشرقة خفيفة */
         --luxury-ease: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
     }
 
@@ -29,7 +27,7 @@
         width: 100%;
         background: var(--clr-surface);
         border: 1px solid var(--border-luxury);
-        box-shadow: 0 40px 100px rgba(184, 134, 11, 0.05);
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
         z-index: 10;
     }
 
@@ -78,44 +76,42 @@
         font-weight: 600;
         margin-bottom: 35px;
         font-family: var(--font-body, 'Tajawal', sans-serif);
-        font-size: 0.8rem;
-        letter-spacing: 2px;
-        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
     }
 
     .success-message {
         color: var(--clr-text-muted);
         line-height: 1.8;
         margin-bottom: 45px;
-        font-size: 1rem;
-        letter-spacing: 0.5px;
+        font-size: 1.05rem;
+        font-family: 'Tajawal', sans-serif;
     }
 
     .info-card {
-        background: rgba(200, 169, 126, 0.08);
+        background: rgba(200, 169, 126, 0.04);
         padding: 30px;
         border: 1px solid var(--border-luxury);
         margin-bottom: 45px;
-        text-align: left;
+        text-align: right; /* محاذاة لليمين تناسباً مع اللغة العربية */
     }
 
     .info-item {
         display: flex;
         justify-content: space-between;
         margin-bottom: 15px;
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         gap: 15px;
+        font-family: 'Tajawal', sans-serif;
     }
 
     .info-label { 
-        text-transform: uppercase; 
-        letter-spacing: 2px; 
         color: var(--clr-accent); 
         font-weight: 700;
-        font-size: 10px;
+        font-size: 12px;
     }
     
-    .info-value { font-weight: 500; color: var(--clr-text); text-align: right; }
+    .info-value { font-weight: 500; color: var(--clr-text); text-align: left; }
 
     .action-buttons {
         display: flex;
@@ -123,42 +119,44 @@
         gap: 20px;
     }
 
+    /* إصلاح مشكلة النص الأبيض فوق الخلفية البيضاء */
     .btn-continue {
-        background: var(--clr-text);
-        color: #fff;
+        background: var(--clr-accent);
+        color: #0F0F0F;
         padding: 22px;
-        font-size: 11px;
-        font-weight: 600;
+        font-size: 13px;
+        font-weight: 700;
         text-decoration: none;
-        text-transform: uppercase;
-        letter-spacing: 4px;
+        letter-spacing: 1px;
         transition: var(--luxury-ease);
-        border: 1px solid var(--clr-text);
+        border: 1px solid var(--clr-accent);
+        font-family: 'Tajawal', sans-serif;
     }
 
     .btn-continue:hover {
         background: transparent;
         color: var(--clr-text);
+        border-color: var(--clr-text);
         transform: translateY(-5px);
     }
 
     .footer-note {
         margin-top: 25px;
         color: var(--clr-text-muted);
-        font-size: 0.75rem;
-        font-style: italic;
-        letter-spacing: 1px;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        font-family: 'Tajawal', sans-serif;
     }
 
     @media (max-width: 600px) {
         .success-wrapper { padding-top: 130px; }
         .success-container { padding: 50px 25px; }
-        .info-item { flex-direction: column; gap: 5px; }
-        .info-value { text-align: left; font-size: 0.9rem; }
+        .info-item { flex-direction: column; gap: 5px; align-items: flex-start; }
+        .info-value { text-align: right; font-size: 0.9rem; }
     }
 </style>
 
-<div class="success-wrapper">
+<div class="success-wrapper" dir="rtl">
     <div class="success-container-outer animate__animated animate__fadeInUp">
         <div class="success-container">
             
@@ -166,34 +164,34 @@
                 <i class="fas fa-check"></i>
             </div>
             
-            <h1 class="success-title">Thank <span style="color: var(--clr-accent);">You.</span></h1>
+            <h1 class="success-title">شكراً <span style="color: var(--clr-accent);">لك.</span></h1>
             
-            <div class="order-id">Reference: #LSS-{{ order.id }}</div>
+            <div class="order-id">رقم المرجع للطلب: #LSS-{{ order.id }}</div>
 
             <p class="success-message">
-                Dear <strong>{{ order.name }}</strong>, <br>
-                Your acquisition has been registered successfully. Our artisans are now preparing your selection for delivery.
+                عزيزنا الفاضل <strong>{{ order.name }}</strong>، <br>
+                تم تسجيل طلبك بنجاح في منظومتنا. يعكف خبراؤنا ومصمّمونا الآن على مراجعة وتجهيز قطعك المختارة بعناية فائقة تمهيداً لتوصيلها إليك.
             </p>
 
             <div class="info-card">
                 <div class="info-item">
-                    <span class="info-label">Destination</span>
-                    <span class="info-value">{{ order.governorate }}, {{ order.address }}</span>
+                    <span class="info-label">وجهة التوصيل</span>
+                    <span class="info-value">{{ order.governorate }}، {{ order.address }}</span>
                 </div>
                 <div class="info-item">
-                    <span class="info-label">Contact</span>
+                    <span class="info-label">رقم التواصل</span>
                     <span class="info-value">{{ order.phone }}</span>
                 </div>
                 <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-luxury);" class="info-item">
-                    <span class="info-label">Investment Total</span>
-                    <span class="info-value" style="color: var(--clr-accent); font-family: 'Playfair Display', serif; font-size: 1.5rem;">{{ order.total_price|floatformat:0 }} LE</span>
+                    <span class="info-label">إجمالي قيمة الاستثمار</span>
+                    <span class="info-value" style="color: var(--clr-accent); font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: bold;">{{ order.total_price|floatformat:0 }} ج.م</span>
                 </div>
             </div>
 
             <div class="action-buttons">
-                <a href="{% url 'shop' %}" class="btn-continue">Return to Collection</a>
+                <a href="{% url 'shop' %}" class="btn-continue">العودة لتصفح التشكيلة الفريدة</a>
                 <p class="footer-note">
-                    A confirmation dossier has been sent to {{ order.email }}.
+                    تم إرسال بيان التأكيد وملخص المقتنيات إلى بريدك الإلكتروني المستجل: {{ order.email }}.
                 </p>
             </div>
 
