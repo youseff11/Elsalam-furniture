@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block fixed_bg %}{% endblock %}
 
 {% block content %}
@@ -361,7 +361,7 @@
     <div class="bento-grid">
         <div class="bento-item item-large" onclick="location.href='/shop/rokn/';">
             <div class="luxury-badge">الإصدار المحدود</div>
-            <img src="{{ MEDIA_URL }}images/1.jpeg" alt="Living">
+            <img src="{% static 'images/10.png' %}" alt="Living">
             <div class="item-explore"><i class="fas fa-arrow-left"></i></div>
             <div class="item-overlay" dir="rtl">
                 <span class="item-category">المعيشة الفاخرة</span>
@@ -370,7 +370,7 @@
         </div>
 
         <div class="bento-item item-tall" onclick="location.href='/shop/ghrf-nom/';">
-            <img src="{{ MEDIA_URL }}images/سرير.jpeg" alt="Bedroom">
+            <img src="{% static 'images/14.png' %}" alt="Bedroom">
             <div class="item-explore"><i class="fas fa-arrow-left"></i></div>
             <div class="item-overlay" dir="rtl">
                 <span class="item-category">الملاذ الآمن</span>
@@ -379,7 +379,7 @@
         </div>
 
         <div class="bento-item item-wide" onclick="location.href='/shop/mtbkh/';">
-            <img src="{{ MEDIA_URL }}images/مطابخ.jpeg" alt="Kitchen">
+            <img src="{% static 'images/11.jpg' %}" alt="Kitchen">
             <div class="item-explore"><i class="fas fa-arrow-left"></i></div>
             <div class="item-overlay" dir="rtl">
                 <span class="item-category">روح المنزل</span>
@@ -388,7 +388,7 @@
         </div>
 
         <div class="bento-item item-wide" onclick="location.href='/shop/ghrf-sfrh/';">
-            <img src="{{ MEDIA_URL }}images/سفر.jpeg" alt="Dining">
+            <img src="{% static 'images/12.webp' %}" alt="Dining">
             <div class="item-explore"><i class="fas fa-arrow-left"></i></div>
             <div class="item-overlay" dir="rtl">
                 <span class="item-category">ليالي دافئة</span>
